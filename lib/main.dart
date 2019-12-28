@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -75,12 +76,26 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class BloodSugarLevel extends StatelessWidget {
+class BloodSugarLevel extends StatefulWidget {      //Changed BloodSugarLevel into a StatefulWidget
+  
+    _BloodSugarLevelState createState() => _BloodSugarLevelState(); 
+}
+
+ class _BloodSugarLevelState extends State<BloodSugarLevel> { //Changed from StateLessWidget to State
+   String _timeString;  //New line
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+   @override
+  void initState() {  //Added for Running Clock
+    _timeString = _formatDateTime(DateTime.now());
+    Timer.periodic(Duration(seconds: 1), (Timer t) => _getTime());
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    String formatDate = DateFormat("hh:mm:ss a \n EEE, dd MMM, yyyy").format(now);
+    
+    // Removed Previous Static Clock Code from here
+
     return MaterialApp(
       home: Scaffold(
         key: _scaffoldKey,
@@ -102,10 +117,9 @@ class BloodSugarLevel extends StatelessWidget {
             Container(
               width: double.infinity,
               margin: EdgeInsets.only(left: 20, right: 20),
-              child: Text(
-                formatDate,
-                textAlign: TextAlign.center,
-                style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              child: Text(_timeString,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 15),
               ),
             ),
             Container(
@@ -155,7 +169,7 @@ class BloodSugarLevel extends StatelessWidget {
     );
   }
 
-  _displaySnackBar(BuildContext context) {
+  _displaySnackBar(BuildContext context) {    //For Showing Saving is done
     final snackBar = SnackBar(
       content: Text(
         "Saved",
@@ -163,6 +177,16 @@ class BloodSugarLevel extends StatelessWidget {
       ),
     );
     _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+  void _getTime(){    //Added After State Change for Running Clock
+    final DateTime now = DateTime.now();
+    final String formattedDateTime = _formatDateTime(now);
+    setState(() {
+      _timeString = formattedDateTime;
+    });
+  }
+  String _formatDateTime(DateTime dateTime){    //Added after State Change for runnign Clock
+    return DateFormat("dd/MM/yyyy \t hh:mm:ss a").format(dateTime);
   }
 }
 
